@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lap Harp</title>
+
+    <!-- Bootstrap 5.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JQuery 3.6 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- Music Stuff -->
+    <script src="./libs/abcjs-basic-min.js" type="text/javascript"></script>
+    <script src="./libs/fabric.min.js" type="text/javascript"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Music&display=swap" rel="stylesheet">
+
+    <!-- <link rel="stylesheet" href="./style.css" /> -->
+
+    <script type="module">
+      import { fillTestData, parseMusic, renderLapHarpSheet, printCanvas } from "./lapharp.js"
+      fillTestData()
+      
+      $(".parse").click(() => {
+        // let lh = JSON.parse($(".test-json").val())
+        let lh = {
+          dimensions: {},
+          tuning: $(".tuning").val(),
+          music: $(".music").val()
+        }
+        $(".dim").each(function() {
+          let k=$(this).data("key")
+          lh.dimensions[k] = Number($(this).val())
+        })
+
+        let music = parseMusic(lh)
+        console.log(music)
+        window.music = music
+        renderLapHarpSheet(music, lh.dimensions)
+      })
+
+      $(".print").click(() => {
+        printCanvas("lapharp")
+      })
+    </script>
+
+    <style>
+      .staff-preview { display: none; }
+      /*.lapharp-render { display: none; }*/
+      .lapharp { 
+        font-family: 'Noto Music';
+        sans-serif; 
+        background: #eee;
+        position: relative;
+      }      
+      #lapharp { 
+        font-family: 'Noto Music';
+      }
+      .note {
+        position: absolute;
+        float: left;
+        font-size:  32px;
+      }
+      .note small {
+        font-size:  12px;
+      }
+      .lapharp-container {
+        display: none;
+      }
+      label {
+        display: block;
+        font-weight: bold;
+        margin-top:  15px;
+      }
+    </style>
+
+  </head>
+  <body>
+  	<div class="container">
+  		<br />
+	    <div class="row">
+		    <div class="col">
+          <h1>Lap Harp Music Maker</h1>
+          <p>Fill out the following to your lap harp dimensions (default is the TK O'Brien lapharp). Dimensions are in inches.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label>Lap Harp Top</label>
+          <input data-key="lpTopW" class="dim form-control" />
+
+          <label>Lap Harp Bottom</label>
+          <input data-key="lpBottomW" class="dim form-control" />
+
+          <label>Lap Harp Height</label>
+          <input data-key="lpLength" class="dim form-control" />
+        </div>
+        <div class="col">
+          <label>Top to Top String</label>
+          <input data-key="lpTopToString" class="dim form-control" />
+
+          <label>Bottom to Bottom String</label>
+          <input data-key="lpBottomToString" class="dim form-control" />
+
+          <label>Number of Strings</label>
+          <input data-key="lpNumStrings" class="dim form-control" />
+        </div>
+        <div class="col">
+          <label>Paper Height</label>
+          <input data-key="ppHeight" class="dim form-control" />
+
+          <label>Paper Width</label>
+          <input data-key="ppWidth" class="dim form-control" />
+          <label>Tuning</label>
+          <input class="tuning form-control" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label>Music (in abc notation)</label>
+          <p>See <a href="https://abcnotation.com/">abcnotation.com</a> for info on how to write in this notation style</p>
+          <textarea class="music form-control" rows=3></textarea>
+
+          <!-- <textarea class="test-json form-control" rows=10></textarea> -->
+
+          <br />
+          <button class="parse btn btn-primary">Parse</button>&nbsp;&nbsp;&nbsp; Hint: if the notes don't show up at first, click Parse again
+        </div>
+      </div>
+      <br /><br />
+      <div class="row">
+        <div class="col">
+          <div class="staff-preview">
+            <h3>Music Preview in Traditional Notation</h3>
+            <div id="staff"></div>
+            <div id="tuning" style="display: none"></div>
+          </div>
+
+          <br />
+          
+          <div class="lapharp-container">
+            <h3>Lap Harp Preview <button class="print btn btn-primary">Print</button></h3>
+            <p>I recommend using 0 margins in print setting, use the gray square to calibrate. The gray square should be 1x1 in</p>
+            <canvas id="lapharp"></canvas>
+            <br />
+          </div>
+
+        </div>
+      </div>
+  	</div>
+  </body>
+</html>
